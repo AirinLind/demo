@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ панель</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container" style="max-width: 1200px">
+      <h1>Панель администратора</h1>
+
+      <select id="filter" onchange="loadRequests()">
+        <option value="all">Все заявки</option>
+        <option value="Новая">Новые</option>
+        <option value="Идет обучение">В обучении</option>
+        <option value="Обучение завершено">Завершенные</option>
+      </select>
+
+      <div id="tableContainer"></div>
+
+      <button
+        onclick="location.href = 'index.html'"
+        style="background: #6c757d; margin-top: 20px"
+      >
+        Выйти
+      </button>
+    </div>
+
+    <script>
+      async function loadRequests() {
+        const res = await fetch("/admin/requests");
+        let requests = await res.json();
+
+        const filter = document.getElementById("filter").value;
+        if (filter !== "all") {
+          requests = requests.filter((r) => r.status === filter);
+        }
+
+        const container = document.getElementById("tableContainer");
+
+        if (requests.length === 0) {
+          container.innerHTML = "<p>Нет заявок</p>";
+          return;
+        }
+
+        let html = `
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Пользователь</th><th>Курс</th><th>Дата</th><th>Статус</th></tr>
+            </thead>
+            <tbody>
+        `;
+
+        for (let req of requests) {
+          html += `
+            <tr>
+              <td data-label="ID">${req.id}</td>
+              <td data-label="Пользователь">${req.fullname}</td>
+              <td data-label="Курс">${req.course_name}</td>
+              <td data-label="Дата">${req.start_date}</td>
+              <td data-label="Статус">
+                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    <button onclick="updateStatus(${req.id}, 'Новая')" style="padding: 5px 8px; color: black; font-size: 11px; margin:0; background: ${req.status === "Новая" ? "#00ffa2" : "#ddd"}">Новая</button>
+                    <button onclick="updateStatus(${req.id}, 'Идет обучение')" style="padding: 5px 8px; color: black; font-size: 11px; margin:0; background: ${req.status === "Идет обучение" ? "#00ffa2" : "#ddd"}">Идет обучение</button>
+                    <button onclick="updateStatus(${req.id}, 'Обучение завершено')" style="padding: 5px 8px; color: black; font-size: 11px; margin:0; background: ${req.status === "Обучение завершено" ? "#00ffa2" : "#ddd"}">Обучение завершено</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      }
+
+      async function updateStatus(id, status) {
+        const res = await fetch(`/admin/request/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert("Статус изменен!");
+          loadRequests();
+        }
+      }
+
+      loadRequests();
+    </script>
+  </body>
+</html>

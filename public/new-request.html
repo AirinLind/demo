@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новая заявка</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Новая заявка</h1>
+        
+        <form action="/create-request" method="POST">
+            <input type="hidden" name="userId" id="userId">
+            
+            <select name="course_name" required>
+                <option value="">Выберите курс</option>
+                <option value="Основы алгоритмизации и программирования">Основы алгоритмизации и программирования</option>
+                <option value="Основы веб-дизайна">Основы веб-дизайна</option>
+                <option value="Основы проектирования баз данных">Основы проектирования баз данных</option>
+            </select>
+            
+            <input type="date" name="start_date" required>
+            
+            <select name="payment_method" required>
+                <option value="">Способ оплаты</option>
+                <option value="cash">Наличными</option>
+                <option value="transfer">Перевод по номеру телефона</option>
+            </select>
+            
+            <button type="submit">Отправить</button>
+        </form>
+        
+        <form action="/user" method="GET">
+            <input type="hidden" name="userId" id="userIdBack">
+            <button type="submit" style="background: #6c757d;">Назад</button>
+        </form>
+        
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            window.location.href = '/';
+        }
+        document.getElementById('userId').value = userId;
+        document.getElementById('userIdBack').value = userId;
+        
+        // Показ ошибки из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            document.getElementById('error').innerText = decodeURIComponent(error);
+        }
+    </script>
+</body>
+</html>

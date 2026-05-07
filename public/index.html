@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Корочки.есть</h1>
+
+        <!-- Слайдер -->
+        <div class="slider-container">
+            <div class="slider" id="slider">
+                <img src="img/rVsdr20b_Sc.jpg">
+                <img src="img/zwhy0SqNzZo.jpg">
+                <img src="img/кот.jpg">
+                <img src="img/орущий кот.jpg">
+            </div>
+            <div class="slider-controls">
+                <button type="button" id="prev">◀</button>
+                <button type="button" id="next">▶</button>
+            </div>
+        </div>
+
+        <!-- Форма входа -->
+        <form action="/login" method="POST">
+            <input type="text" name="login" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+        
+        <form action="/register-page" method="GET">
+            <button type="submit" style="background: #6c757d;">Регистрация</button>
+        </form>
+        
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        // Слайдер
+        let slideIndex = 0;
+        const slider = document.getElementById('slider');
+        const totalSlides = document.querySelectorAll('.slider img').length;
+        
+        function updateSlider() {
+            slider.style.transform = `translateX(-${slideIndex * 100}%)`;
+        }
+        
+        document.getElementById('next').onclick = () => {
+            slideIndex = (slideIndex + 1) % totalSlides;
+            updateSlider();
+        };
+        
+        document.getElementById('prev').onclick = () => {
+            slideIndex = (slideIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        };
+        
+        setInterval(() => {
+            slideIndex = (slideIndex + 1) % totalSlides;
+            updateSlider();
+        }, 3000);
+        
+        // Показываем ошибку из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerText = decodeURIComponent(error);
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

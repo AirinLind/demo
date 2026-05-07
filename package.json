@@ -1,0 +1,17 @@
+{
+  "name": "demo-exam",
+  "version": "1.0.0",
+  "description": "Портал записи на курсы",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+   "keywords": ["exam", "demo", "express", "sqlite"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
+  }
+}

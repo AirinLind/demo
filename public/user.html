@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои заявки</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Мои заявки</h1>
+        
+        <div id="requests"></div>
+        
+        <form action="/new-request.html" method="GET">
+            <button type="submit">Новая заявка</button>
+        </form>
+        
+        <form action="/" method="GET">
+            <button type="submit" style="background: #6c757d;">Выйти</button>
+        </form>
+        
+        <hr>
+        
+        <h3>Оставить отзыв</h3>
+        <form action="/add-review" method="POST" id="reviewForm">
+            <input type="hidden" name="userId" id="userId">
+            <select name="requestId" id="selectCourse" required>
+                <option value="">-- Загрузка --</option>
+            </select>
+            <textarea name="review" rows="3" placeholder="Ваш отзыв..." required></textarea>
+            <button type="submit">Отправить отзыв</button>
+        </form>
+        
+        <div id="msg" class="success"></div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem('userId');
+        if (!userId) window.location.href = '/';
+        
+        document.getElementById('userId').value = userId;
+        
+        async function loadRequests() {
+            const res = await fetch(`/requests/${userId}`);
+            const requests = await res.json();
+            
+            const container = document.getElementById('requests');
+            if (requests.length === 0) {
+                container.innerHTML = '<p>Нет заявок</p>';
+            } else {
+                container.innerHTML = requests.map(r => `
+                    <div class="request-item">
+                        <b>${r.course_name}</b><br>
+                        Дата: ${r.start_date}<br>
+                        Оплата: ${r.payment_method === 'cash' ? 'Наличные' : 'Перевод'}<br>
+                        <span class="status status-${r.status === 'Новая' ? 'new' : (r.status === 'Идет обучение' ? 'active' : 'completed')}">${r.status}</span>
+                        ${r.review ? `<br>Отзыв: ${r.review}` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // Заполняем select для отзывов
+            const completed = requests.filter(r => r.status === 'Обучение завершено' && !r.review);
+            const select = document.getElementById('selectCourse');
+            if (completed.length === 0) {
+                select.innerHTML = '<option value="">Нет курсов для отзыва</option>';
+                select.disabled = true;
+            } else {
+                select.innerHTML = '<option value="">-- Выберите курс --</option>' + 
+                    completed.map(r => `<option value="${r.id}">${r.course_name}</option>`).join('');
+            }
+        }
+        
+        // Показ сообщения из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        if (msg) {
+            document.getElementById('msg').innerText = decodeURIComponent(msg);
+            setTimeout(() => {
+                document.getElementById('msg').innerText = '';
+            }, 3000);
+        }
+        
+        loadRequests();
+    </script>
+</body>
+</html>
