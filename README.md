@@ -3,7 +3,9 @@ npm init -y
 npm install express sqlite3
 
 Запуск сервера
+<br>
 npm start
+<br>
 Сервер запустится на http://localhost:3000
 
 Настройка базы данных (PostgreSQL)
@@ -11,8 +13,11 @@ npm start
 Откройте pgAdmin
 
 Нажмите правой кнопкой мыши на стандартную БД
+<br>
 Откройте Query Tool
+<br>
 CREATE DATABASE названиеБД;
+<br>
 Нажмите Execute (F5)
 
 Обновите список БД (правой кнопкой → Refresh)
